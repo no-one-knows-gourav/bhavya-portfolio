@@ -279,29 +279,6 @@ export function ExperienceSection() {
             <ExperienceCard key={area.title} area={area} index={i} />
           ))}
         </div>
-
-        {/* Stats row */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { value: "600+", label: "Problems Solved" },
-            { value: "3+", label: "Research Projects" },
-            { value: "15+", label: "Students Mentored" },
-            { value: "5+", label: "Hackathon Wins" },
-          ].map((stat, i) => (
-            <div
-              key={stat.label}
-              data-ocid={`experience.stat.${i + 1}`}
-              className="rounded-xl border border-border bg-card/50 backdrop-blur-sm px-6 py-5 text-center hover:border-accent/40 hover:shadow-glow transition-smooth"
-            >
-              <p className="font-display font-bold text-3xl text-gradient-purple mb-1">
-                {stat.value}
-              </p>
-              <p className="font-body text-xs text-muted-foreground">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Inline keyframes for spin (not in tailwind default) */}

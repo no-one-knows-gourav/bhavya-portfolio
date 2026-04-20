@@ -1,29 +1,22 @@
 import type { SocialLink } from "@/types/portfolio";
 import { ArrowUpRight, Linkedin, Mail, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { SiGithub, SiX } from "react-icons/si";
+import { SiGithub } from "react-icons/si";
 
 const socials: SocialLink[] = [
   {
     id: 1,
     label: "LinkedIn",
-    url: "https://linkedin.com/in/bhavya-bharadwaj",
+    url: "https://www.linkedin.com/in/bhavya-bharadwaj-95949532b/",
     icon: "linkedin",
     color: "oklch(0.72 0.16 230)",
   },
   {
     id: 2,
     label: "GitHub",
-    url: "https://github.com/bhavyabharadwaj",
+    url: "https://github.com/BinaryBlitz08",
     icon: "github",
     color: "oklch(0.82 0.02 280)",
-  },
-  {
-    id: 3,
-    label: "X / Twitter",
-    url: "https://x.com/bhavyabharadwaj",
-    icon: "x",
-    color: "oklch(0.88 0.005 280)",
   },
 ];
 
@@ -32,7 +25,6 @@ const EMAIL = "bhavya.bharadwaj.24031@iitgoa.ac.in";
 function SocialIcon({ icon }: { icon: string }) {
   if (icon === "linkedin") return <Linkedin className="w-5 h-5" />;
   if (icon === "github") return <SiGithub className="w-5 h-5" />;
-  if (icon === "x") return <SiX className="w-5 h-5" />;
   return null;
 }
 
