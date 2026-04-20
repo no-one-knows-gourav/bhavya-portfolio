@@ -226,7 +226,7 @@ export function ExperienceSection() {
     <section
       id="experience"
       data-ocid="experience.section"
-      className="relative py-28 bg-background overflow-hidden"
+      className="relative py-28 overflow-hidden"
     >
       {/* Constant ambient particle field */}
       <ParticleCanvas />

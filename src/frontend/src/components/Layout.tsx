@@ -88,7 +88,7 @@ function Footer() {
   const caffeineUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`;
 
   return (
-    <footer className="bg-card border-t border-border py-10 px-6">
+    <footer className="bg-black/40 border-t border-white/10 backdrop-blur-md py-10 px-6">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex flex-col items-center md:items-start gap-0.5">
           <p className="font-display text-lg font-bold text-primary">
@@ -133,10 +133,39 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Header />
-      <main className="flex-1 pt-16">{children}</main>
-      <Footer />
+    <div className="min-h-screen flex flex-col relative">
+      {/* ── Fixed cityscape background ── */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          backgroundImage: "url('/assets/images/cityscape.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "blur(2px) brightness(0.65) saturate(0.8)",
+          transform: "scale(1.04)", // prevents blur edge bleed
+        }}
+      />
+      {/* Dark purple colour wash over the cityscape */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 1,
+          background:
+            "linear-gradient(135deg, oklch(0.14 0.04 280 / 0.60) 0%, oklch(0.10 0.06 270 / 0.68) 100%)",
+        }}
+      />
+
+      {/* Page content — sits above the fixed backdrop */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 pt-16">{children}</main>
+        <Footer />
+      </div>
     </div>
   );
 }

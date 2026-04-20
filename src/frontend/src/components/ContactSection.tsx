@@ -42,7 +42,7 @@ export function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative py-28 overflow-hidden bg-card"
+      className="relative py-28 overflow-hidden"
       data-ocid="contact.section"
     >
       {/* Ambient background blobs */}

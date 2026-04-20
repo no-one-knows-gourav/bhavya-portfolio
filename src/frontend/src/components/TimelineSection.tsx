@@ -111,7 +111,7 @@ function TimelineCard({
         className={`w-[calc(50%-2.5rem)] ${isLeft ? "pr-0 text-right" : "pl-0 text-left"}`}
       >
         <div
-          className="group relative bg-card border border-border rounded-2xl p-5 shadow-subtle hover:shadow-glow transition-smooth cursor-default"
+          className="group relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 shadow-subtle hover:shadow-glow hover:border-accent/40 transition-smooth cursor-default"
           data-ocid={`timeline.item.${item.id}`}
         >
           {/* Connector arrow */}
@@ -258,7 +258,7 @@ export function TimelineSection() {
   return (
     <section
       id="timeline"
-      className="py-28 bg-muted/30 relative overflow-hidden"
+      className="py-28 relative overflow-hidden"
       data-ocid="timeline.section"
       ref={sectionRef}
     >

@@ -1,83 +1,71 @@
-import { Badge } from "@/components/ui/badge";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
 
 const ROLES = [
-  "Coder",
-  "Researcher",
-  "Analyst",
-  "Strategist",
-  "Leader",
-  "Mentor",
+  "Visionary Leader",
+  "Technical Architect",
+  "AI Researcher",
+  "Strategy Consultant",
+  "Fullstack Engineer",
+  "Design Thinker",
 ] as const;
-
-const ORBS = [
-  {
-    size: "w-72 h-72",
-    pos: "top-[-4rem] left-[-4rem]",
-    delay: "0s",
-    blur: "blur-3xl",
-    opacity: "opacity-20",
-  },
-  {
-    size: "w-96 h-96",
-    pos: "bottom-[-6rem] right-[-4rem]",
-    delay: "1.2s",
-    blur: "blur-3xl",
-    opacity: "opacity-15",
-  },
-  {
-    size: "w-48 h-48",
-    pos: "top-1/3 left-1/4",
-    delay: "0.6s",
-    blur: "blur-2xl",
-    opacity: "opacity-25",
-  },
-  {
-    size: "w-32 h-32",
-    pos: "top-1/4 right-1/3",
-    delay: "1.8s",
-    blur: "blur-xl",
-    opacity: "opacity-30",
-  },
-  {
-    size: "w-20 h-20",
-    pos: "bottom-1/3 left-1/3",
-    delay: "0.9s",
-    blur: "blur-xl",
-    opacity: "opacity-20",
-  },
-  {
-    size: "w-56 h-56",
-    pos: "bottom-1/4 right-1/4",
-    delay: "2.4s",
-    blur: "blur-3xl",
-    opacity: "opacity-15",
-  },
+// ── Firefly data — fixed so animations are stable across renders ──────────
+const FIREFLIES = [
+  { id: 1, left: "12%",  top: "65%", size: 3, dur: 14, delay: 0,   kx: [0, 40, 20, -10, 0],  ky: [0, -40, -90, -60, 0]  },
+  { id: 2, left: "78%",  top: "55%", size: 4, dur: 18, delay: 2.5, kx: [0, -30, -55, -20, 0], ky: [0, -30, -80, -50, 0]  },
+  { id: 3, left: "33%",  top: "75%", size: 3, dur: 12, delay: 5,   kx: [0, 25, 50, 35, 0],   ky: [0, -50, -100, -70, 0] },
+  { id: 4, left: "60%",  top: "40%", size: 5, dur: 16, delay: 1,   kx: [0, -40, -20, 10, 0],  ky: [0, -35, -75, -45, 0]  },
+  { id: 5, left: "88%",  top: "70%", size: 3, dur: 20, delay: 7,   kx: [0, -20, -45, -25, 0], ky: [0, -45, -95, -65, 0]  },
+  { id: 6, left: "22%",  top: "35%", size: 4, dur: 15, delay: 3.5, kx: [0, 30, 10, -15, 0],   ky: [0, -25, -60, -40, 0]  },
 ];
 
-const STAR_POSITIONS: {
-  top: string;
-  left?: string;
-  right?: string;
-  size: number;
-  delay: string;
-}[] = [
-  { top: "15%", left: "8%", size: 2, delay: "0.3s" },
-  { top: "25%", right: "12%", size: 3, delay: "0.8s" },
-  { top: "60%", left: "5%", size: 2, delay: "1.5s" },
-  { top: "75%", right: "8%", size: 2, delay: "0.5s" },
-  { top: "40%", left: "90%", size: 3, delay: "1.2s" },
-  { top: "80%", left: "18%", size: 2, delay: "2.0s" },
-  { top: "10%", left: "55%", size: 2, delay: "0.7s" },
-  { top: "45%", right: "20%", size: 2, delay: "1.7s" },
-];
+function Fireflies() {
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 5 }}
+    >
+      {FIREFLIES.map((f) => (
+        <motion.div
+          key={f.id}
+          style={{
+            position: "absolute",
+            left: f.left,
+            top: f.top,
+            width: f.size,
+            height: f.size,
+            borderRadius: "50%",
+            background: "oklch(0.78 0.2 280)",
+            boxShadow: [
+              `0 0 ${f.size * 2}px ${f.size}px oklch(0.72 0.24 270 / 0.6)`,
+              `0 0 ${f.size * 5}px ${f.size * 2}px oklch(0.65 0.22 280 / 0.2)`,
+            ].join(", "),
+          }}
+          animate={{
+            x: f.kx,
+            y: f.ky,
+            opacity: [0.15, 0.65, 0.3, 0.75, 0.2, 0.15],
+            scale:   [0.8,  1.4,  0.9,  1.3,  0.8,  0.8],
+          }}
+          transition={{
+            duration: f.dur,
+            delay: f.delay,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 
 export function HeroSection() {
   const [currentRole, setCurrentRole] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef = useRef<any>(null);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -85,204 +73,264 @@ export function HeroSection() {
       setTimeout(() => {
         setCurrentRole((prev) => (prev + 1) % ROLES.length);
         setIsVisible(true);
-      }, 300);
-    }, 2000);
+      }, 400);
+    }, 3000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
-  const handleScrollToProjects = () => {
+  const scrollToProjects = () => {
     document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToContact = () => {
+    document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <section
       id="hero"
-      className="min-h-[100svh] flex flex-col items-center justify-center relative overflow-hidden"
+      className="min-h-[100svh] flex flex-col items-center relative overflow-hidden"
+      data-ocid="hero.section"
     >
-      {/* Background image */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: "url('/assets/generated/hero-bg.dim_1600x900.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      {/*
+       * Layout is a normal flex COLUMN — no element overlaps another vertically.
+       * The only z-index trick is: "Bharadwaj" outline sits BEHIND the photo
+       * inside the same relative container.
+       */}
 
-      {/* Deep overlay for text legibility */}
-      <div className="absolute inset-0 z-0 bg-primary/70" />
+      {/* ── Fireflies ambient layer ── */}
+      <Fireflies />
 
-      {/* Floating ambient orbs */}
-      {ORBS.map((orb) => (
-        <div
-          key={orb.delay + orb.size}
-          className={`absolute ${orb.size} ${orb.pos} rounded-full bg-accent animate-float ${orb.blur} ${orb.opacity} pointer-events-none`}
-          style={{ animationDelay: orb.delay }}
-        />
-      ))}
-
-      {/* Sparkle stars */}
-      {STAR_POSITIONS.map((star) => (
-        <div
-          key={star.delay + String(star.top)}
-          className="absolute rounded-full bg-accent/60 animate-pulse-glow pointer-events-none"
+      {/* ── 1. "BHAVYA" — solid, in flow, above photo ── */}
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full text-center select-none pointer-events-none"
+        style={{ paddingTop: "0", marginBottom: "-0.5vh", zIndex: 30, position: "relative" }}
+        data-ocid="hero.name_bhavya"
+      >
+        <span
+          className="font-display font-extrabold leading-none block"
           style={{
-            top: star.top,
-            left: star.left,
-            right: star.right,
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            animationDelay: star.delay,
+            fontSize: "clamp(4.5rem, 17vw, 20rem)",
+            letterSpacing: "-0.03em",
+            lineHeight: 0.9,
+            /* lavender accent — no glow */
+            color: "oklch(0.78 0.2 280)",
           }}
-        />
-      ))}
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-        {/* University badge */}
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-6"
         >
-          <Badge
-            variant="outline"
-            className="border-accent/50 text-accent/90 bg-primary/30 backdrop-blur-sm font-body text-xs tracking-[0.25em] uppercase px-5 py-2 rounded-full"
-            data-ocid="hero.university_badge"
-          >
-            Indian Institute of Technology, Goa
-          </Badge>
-        </motion.div>
+          Bhavya
+        </span>
+      </motion.div>
 
-        {/* Name */}
+      {/* ── 2. Photo panel — "Bharadwaj" outline behind photo inside this block ── */}
+      <div
+        className="relative flex justify-center items-end w-full"
+        style={{ marginTop: "-1vw", flexShrink: 0 }}
+      >
+        {/* ── 2a. "BHARADWAJ" outline — z:10, behind photo ── */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-        >
-          <h1
-            className="font-display font-bold leading-none tracking-tight mb-4"
-            data-ocid="hero.name_heading"
-          >
-            <span
-              className="block text-7xl sm:text-8xl md:text-[9rem] lg:text-[10rem] text-gradient-purple"
-              style={{ letterSpacing: "-0.03em" }}
-            >
-              Bhavya
-            </span>
-            <span
-              className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary-foreground/90 mt-1"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Bharadwaj
-            </span>
-          </h1>
-        </motion.div>
-
-        {/* Animated cycling role */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="flex flex-col items-center gap-4 mb-8"
-          data-ocid="hero.role_section"
-        >
-          {/* Cycling single role */}
-          <div
-            className="h-12 flex items-center justify-center"
-            data-ocid="hero.role_badge"
-          >
-            <AnimatePresence mode="wait">
-              {isVisible && (
-                <motion.span
-                  key={currentRole}
-                  initial={{ opacity: 0, y: 10, scale: 0.92 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.92 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="inline-block px-8 py-2.5 rounded-full border border-accent/60 text-accent font-display font-semibold text-2xl md:text-3xl bg-accent/10 backdrop-blur-sm shadow-glow"
-                >
-                  {ROLES[currentRole]}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* All roles as small static tags below */}
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
-            {ROLES.map((role, i) => (
-              <span
-                key={role}
-                className={`px-3 py-1 rounded-full text-xs font-body font-medium tracking-wide border transition-smooth ${
-                  i === currentRole
-                    ? "border-accent text-accent bg-accent/20"
-                    : "border-accent/20 text-primary-foreground/50 bg-primary/20"
-                }`}
-              >
-                {role}
-              </span>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Tagline */}
-        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="font-body text-primary-foreground/65 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed"
-          data-ocid="hero.tagline"
+          transition={{ duration: 1.1, delay: 0.3 }}
+          className="absolute inset-x-0 flex justify-center items-center pointer-events-none select-none"
+          style={{ zIndex: 10, top: "18%", transform: "translateY(0%)" }}
+          data-ocid="hero.name_bharadwaj"
         >
-          Building elegant solutions at the intersection of technology,
-          research, and leadership.
-        </motion.p>
+          <span
+            className="font-display font-extrabold leading-none whitespace-nowrap"
+            style={{
+              fontSize: "clamp(2.8rem, 12vw, 15rem)",
+              letterSpacing: "-0.02em",
+              color: "transparent",
+              WebkitTextStroke:
+                "clamp(1px, 0.12vw, 2px) oklch(0.78 0.18 270 / 0.7)",
+            }}
+          >
+            Bharadwaj
+          </span>
+        </motion.div>
 
-        {/* CTA */}
+        {/*
+         * ── 2b. Photo — z:20, in front of outline ──
+         *
+         * The image is 1348 × 2292 (portrait, ratio ≈ 1 : 1.70).
+         * We want to show head → elbow ≈ top 58% of height.
+         *
+         * Trick: wrap in a div with overflow:hidden and a fixed height.
+         * img width:100% + height:auto → image renders taller than the
+         * container, and overflow:hidden clips the bottom.
+         *
+         * Target crop: show top 58%  →  container height = 58% of natural height
+         *   natural height of 500px-wide img = 500 × (2292/1348) ≈ 850px
+         *   container height = 850 × 0.58 ≈ 493px  →  aspect ≈ 500:493 ≈ 1:0.99
+         * We'll use a convenient responsive height via clamp.
+         */}
+        {/* ── Purple glow halo behind photo — z:15 ── */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            zIndex: 15,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "clamp(260px, 50vw, 580px)",
+            height: "clamp(260px, 50vw, 580px)",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(ellipse at center, oklch(0.65 0.25 280 / 0.22) 0%, oklch(0.55 0.22 270 / 0.08) 55%, transparent 75%)",
+            pointerEvents: "none",
+          }}
+        />
+
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.65 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          className="relative mx-auto overflow-hidden"
+          style={{
+            zIndex: 20,
+            /* Smaller photo so more of "Bharadwaj" peeks out on both sides */
+            width: "clamp(170px, 30vw, 360px)",
+            /* 58% crop → height = width × (2292/1348) × 0.58 ≈ width × 0.987 */
+            height: "clamp(168px, 29.6vw, 355px)",
+          }}
+          data-ocid="hero.photo"
         >
+          <img
+            src="/assets/images/bhavya.png"
+            alt="Bhavya Bharadwaj"
+            className="block select-none"
+            style={{
+              width: "100%",
+              height: "auto",
+              // Crop centers horizontally; top of image aligns to top of container
+              objectFit: "cover",
+              objectPosition: "center top",
+              // B&W → sepia → hue-rotate → purple tint
+              filter:
+                "grayscale(100%) sepia(35%) hue-rotate(230deg) saturate(280%) brightness(0.88)",
+            }}
+            draggable={false}
+          />
+        </motion.div>
+      </div>
+      {/* ── 2c. IIT Goa bordered platform — photo rests on this ── */}
+      <motion.div
+        initial={{ opacity: 0, scaleX: 0.6 }}
+        animate={{ opacity: 1, scaleX: 1 }}
+        transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="flex items-center justify-center select-none"
+        style={{
+          /* wider than photo (clamp 170px, 30vw, 360px) */
+          width: "clamp(320px, 55vw, 640px)",
+          borderTop: "none",
+          borderLeft: "1px solid oklch(0.78 0.18 270 / 0.45)",
+          borderRight: "1px solid oklch(0.78 0.18 270 / 0.45)",
+          borderBottom: "1px solid oklch(0.78 0.18 270 / 0.45)",
+          padding: "10px 28px 10px",
+          borderRadius: "0 0 12px 12px",
+          background: "oklch(0.72 0.24 270 / 0.04)",
+          backdropFilter: "blur(8px)",
+          zIndex: 30,
+          position: "relative",
+          /* flush against photo bottom */
+          marginTop: 0,
+        }}
+      >
+        <span className="font-body text-[9px] tracking-[0.4em] uppercase font-semibold"
+          style={{ color: "oklch(0.78 0.18 270 / 0.65)" }}
+        >
+          Indian Institute of Technology, Goa
+        </span>
+      </motion.div>
+
+      {/* ── 3. Role · tagline · CTAs ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.7 }}
+        className="relative flex flex-col items-center text-center gap-5 px-6 pb-16 pt-6 w-full"
+        style={{ zIndex: 30 }}
+      >
+
+        {/* Cycling role */}
+        <div className="h-10 flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            {isVisible && (
+              <motion.div
+                key={currentRole}
+                initial={{ opacity: 0, filter: "blur(8px)", y: 6 }}
+                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                exit={{ opacity: 0, filter: "blur(8px)", y: -6 }}
+                transition={{ duration: 0.45, ease: "anticipate" }}
+                className="flex items-center gap-4"
+                data-ocid="hero.role_badge"
+              >
+                <div className="w-8 h-px bg-accent/50" />
+                <span className="font-display font-semibold text-xl md:text-2xl text-accent">
+                  {ROLES[currentRole]}
+                </span>
+                <div className="w-8 h-px bg-accent/50" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Tagline */}
+        <p className="font-body text-white/50 text-sm md:text-base max-w-lg leading-relaxed font-light">
+          Architecting high-impact solutions at the frontier of{" "}
+          <span className="text-white/85 font-medium">technology</span>, driven
+          by <span className="text-white/85 font-medium">research</span> and
+          anchored in{" "}
+          <span className="text-white/85 font-medium">strategic leadership</span>.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 mt-1">
           <Button
-            type="button"
-            onClick={handleScrollToProjects}
-            className="rounded-full px-10 py-4 text-base font-display font-semibold bg-accent text-accent-foreground hover:bg-accent/90 shadow-glow transition-bounce"
+            size="lg"
+            onClick={scrollToProjects}
+            className="group relative overflow-hidden rounded-full bg-primary px-10 py-5 text-base font-display font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-2xl"
             data-ocid="hero.explore_button"
           >
-            Explore My Work →
+            <div className="absolute inset-0 bg-accent/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+            <span className="relative z-10 flex items-center gap-2">
+              View Portfolio{" "}
+              <span className="group-hover:translate-x-1 transition-transform">
+                →
+              </span>
+            </span>
           </Button>
           <Button
-            type="button"
-            variant="outline"
-            onClick={() =>
-              document
-                .querySelector("#contact")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            className="rounded-full px-8 py-4 text-base font-display font-medium border-accent/40 text-accent hover:bg-accent/10 transition-smooth"
+            variant="ghost"
+            size="lg"
+            onClick={scrollToContact}
+            className="rounded-full px-8 py-5 text-base font-display font-medium text-white/55 hover:text-accent hover:bg-accent/5 transition-all"
             data-ocid="hero.contact_button"
           >
             Get In Touch
           </Button>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
-      {/* Bottom scroll hint */}
+      {/* ── Scroll hint ── */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10"
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-25 hover:opacity-70 transition-opacity cursor-pointer"
+        style={{ zIndex: 30 }}
+        onClick={scrollToProjects}
         data-ocid="hero.scroll_hint"
       >
-        <span className="font-body text-primary-foreground/40 text-xs tracking-widest uppercase">
+        <span className="font-body text-[9px] tracking-[0.5em] uppercase text-accent font-bold">
           Scroll
         </span>
-        <div className="w-px h-10 bg-gradient-to-b from-accent/60 to-transparent animate-pulse" />
+        <div className="w-px h-9 bg-gradient-to-b from-accent to-transparent" />
       </motion.div>
     </section>
   );

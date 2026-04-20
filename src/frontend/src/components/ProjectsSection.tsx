@@ -5,62 +5,58 @@ interface Project {
   id: string;
   title: string;
   tagline: string;
-  icon: string;
   techs: string[];
   outcome: string;
-  color: string;
 }
 
 const PROJECTS: Project[] = [
   {
-    id: "purpleai",
-    title: "PurpleAI",
-    tagline: "ML-powered conversational intelligence",
-    icon: "🤖",
-    techs: ["Python", "FastAPI", "TensorFlow", "React"],
+    id: "ecomiles",
+    title: "EcoMiles",
+    tagline: "Pollution-aware navigation system",
+    techs: ["FastAPI", "Angular", "Google Cloud", "RESTful APIs"],
     outcome:
-      "Built an AI chatbot achieving 91% intent accuracy with real-time streaming responses and sub-200ms latency.",
-    color: "from-violet-600/40 to-purple-800/60",
+      "Built a full-stack navigation app for least-pollution routes; secured top 20 out of 450+ teams in Clear Skies Challenge 2025.",
   },
   {
-    id: "algovault",
-    title: "AlgoVault",
-    tagline: "Competitive programming progress tracker",
-    icon: "⚡",
-    techs: ["C++", "React", "Firebase", "Node.js"],
+    id: "investment-system",
+    title: "AI Investment Decision System",
+    tagline: "Real-time market ingestion & LLM analysis",
+    techs: ["Python", "FastAPI", "LLMs", "Streaming"],
     outcome:
-      "Helped 500+ competitive programmers visualize growth across 10 platforms with smart performance insights.",
-    color: "from-indigo-600/40 to-purple-700/60",
+      "Engineered real-time stock data ingestion, reducing alert latency by 17%. Built LLM-based prediction microservices (Inter-IIT 14.0).",
   },
   {
-    id: "datalens",
-    title: "DataLens",
-    tagline: "Interactive data visualization dashboard",
-    icon: "📊",
-    techs: ["Python", "Pandas", "Plotly", "Flask"],
+    id: "farmers-bot",
+    title: "Farmers Bot",
+    tagline: "Multilingual voice-activated agricultural assistant",
+    techs: ["Google TTS/STT", "FastAPI", "Mobile"],
     outcome:
-      "Reduced analyst reporting time by 60% with a self-serve BI dashboard supporting 20+ chart types.",
-    color: "from-purple-600/40 to-fuchsia-700/60",
+      "Developed a multilingual app for voice queries; achieved 92% user satisfaction validated by door-to-door feedback (GDSC IIT Goa).",
   },
   {
-    id: "leadher",
-    title: "LeadHer",
-    tagline: "Women-in-tech community platform",
-    icon: "🌸",
-    techs: ["React", "Node.js", "MongoDB", "AWS"],
+    id: "airwise",
+    title: "AirWise",
+    tagline: "Full-stack flight booking with dynamic pricing",
+    techs: ["Angular", "Node.js", "Express", "MongoDB"],
     outcome:
-      "Connected 2,000+ women in tech with mentorship matching, job boards, and community events.",
-    color: "from-pink-600/30 to-purple-700/60",
+      "Built booking platform with dynamic surge pricing, wallet payments, and PNR generation; deployed live on Vercel.",
   },
   {
-    id: "researchbot",
-    title: "ResearchBot",
-    tagline: "Automated academic paper summarizer",
-    icon: "🔬",
-    techs: ["Python", "NLP", "Hugging Face", "LangChain"],
+    id: "swiftcart",
+    title: "SwiftCart",
+    tagline: "Architected e-commerce ecosystem",
+    techs: ["Angular", "Express.js", "MongoDB", "Stripe"],
     outcome:
-      "Summarizes 50-page research papers in under 10 seconds with 94% factual retention using RAG pipelines.",
-    color: "from-violet-700/40 to-purple-900/60",
+      "Architected full-stack e-commerce app with global search and Stripe gateway integration (Architechs IIT Goa).",
+  },
+  {
+    id: "netscope",
+    title: "NetScope",
+    tagline: "Real-time network topology & activity detection",
+    techs: ["Python", "Scapy", "Networks"],
+    outcome:
+      "Architected a monitoring system displaying topology despite AP isolation; compatible with all broadband, IPv4, and IPv6.",
   },
 ];
 
@@ -79,7 +75,7 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
     >
       <div
         ref={cardRef}
-        className="relative w-full h-72 transition-all duration-700"
+        className="relative w-full h-64 transition-all duration-700"
         style={{
           transformStyle: "preserve-3d",
           transform: "rotateY(0deg)",
@@ -94,20 +90,23 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
       >
         {/* FRONT */}
         <div
-          className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${project.color} border border-primary/30 shadow-card-hover flex flex-col items-center justify-center gap-4 px-6 text-center overflow-hidden`}
+          className="absolute inset-0 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 shadow-card-hover flex flex-col items-center justify-center gap-4 px-6 text-center overflow-hidden"
           style={{ backfaceVisibility: "hidden" }}
         >
           {/* Ambient glow blob */}
           <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-10 -left-8 w-28 h-28 rounded-full bg-primary/30 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-8 w-28 h-28 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
-          <span className="text-5xl drop-shadow-lg animate-pulse-glow">
-            {project.icon}
-          </span>
+          {/* Simple tech indicator icon instead of emoji */}
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
+            <div className="w-8 h-8 rounded-full bg-accent/40 blur-lg animate-pulse-glow" />
+            <div className="absolute w-6 h-6 border-2 border-accent/60 rounded-lg rotate-45" />
+          </div>
+
           <h3 className="font-display font-bold text-2xl text-foreground tracking-tight">
             {project.title}
           </h3>
-          <p className="font-body text-sm text-muted-foreground leading-snug">
+          <p className="font-body text-sm text-muted-foreground leading-snug px-4">
             {project.tagline}
           </p>
 
@@ -120,7 +119,7 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
 
         {/* BACK */}
         <div
-          className="absolute inset-0 rounded-2xl bg-card border border-accent/30 shadow-card-hover flex flex-col justify-between px-6 py-7 overflow-hidden"
+          className="absolute inset-0 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 shadow-card-hover flex flex-col justify-between px-5 py-6 overflow-hidden"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",
@@ -129,11 +128,11 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
           {/* Ambient glow */}
           <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-accent/10 blur-3xl pointer-events-none" />
 
-          <div>
-            <p className="font-display font-bold text-lg text-foreground mb-1">
+          <div className="flex-1">
+            <p className="font-display font-bold text-base text-foreground mb-1 leading-tight">
               {project.title}
             </p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed mb-5">
+            <p className="font-body text-sm text-muted-foreground leading-relaxed">
               {project.outcome}
             </p>
           </div>
@@ -142,7 +141,7 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
             {project.techs.map((tech) => (
               <span
                 key={tech}
-                className="px-3 py-1 rounded-full bg-primary/20 border border-primary/40 font-mono text-xs text-accent font-medium"
+                className="px-3 py-1 rounded-full bg-accent/10 border border-accent/20 font-mono text-[10px] text-accent font-medium"
               >
                 {tech}
               </span>
@@ -158,7 +157,7 @@ export function ProjectsSection() {
   return (
     <section
       id="projects"
-      className="py-28 bg-background relative overflow-hidden"
+      className="py-28 relative overflow-hidden"
     >
       {/* Background decorative orbs */}
       <div className="absolute top-10 left-1/3 w-72 h-72 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
