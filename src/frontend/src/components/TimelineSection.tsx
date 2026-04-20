@@ -4,6 +4,33 @@ import { useEffect, useRef, useState } from "react";
 const TIMELINE_ITEMS: TimelineItem[] = [
   {
     id: 1,
+    date: "Mar 2025",
+    title: "Publicity Head",
+    organization: "IEEE Student Branch",
+    description:
+      "Leading publicity and outreach activities for IEEE events; increased visibility and student participation metrics across the institute.",
+    type: "work",
+  },
+  {
+    id: 2,
+    date: "Sept 2024",
+    title: "Core Member",
+    organization: "Architechs (Web and App Development)",
+    description:
+      "Conducted technical workshops at managerial levels and engineered multiple institute-level software solutions.",
+    type: "work",
+  },
+  {
+    id: 3,
+    date: "Aug 2024",
+    title: "Core Member",
+    organization: "GDSC, IIT Goa",
+    description:
+      "Driving technical culture through Google Developer Student Club initiatives and architecting high-impact institute projects.",
+    type: "work",
+  },
+  {
+    id: 4,
     date: "2023 – Present",
     title: "Technical Lead",
     organization: "IIT Goa Coding Club",
@@ -12,7 +39,7 @@ const TIMELINE_ITEMS: TimelineItem[] = [
     type: "work",
   },
   {
-    id: 2,
+    id: 5,
     date: "Summer 2023",
     title: "Research Intern",
     organization: "National Institute of Oceanography",
@@ -21,7 +48,7 @@ const TIMELINE_ITEMS: TimelineItem[] = [
     type: "work",
   },
   {
-    id: 3,
+    id: 6,
     date: "2022 – 2023",
     title: "Analyst Intern",
     organization: "XYZ Fintech Startup",
@@ -30,7 +57,7 @@ const TIMELINE_ITEMS: TimelineItem[] = [
     type: "work",
   },
   {
-    id: 4,
+    id: 7,
     date: "2022 – Present",
     title: "Strategy Mentor",
     organization: "Women in Tech · IIT Goa",
@@ -39,7 +66,7 @@ const TIMELINE_ITEMS: TimelineItem[] = [
     type: "work",
   },
   {
-    id: 5,
+    id: 8,
     date: "2021 – 2022",
     title: "Core Team Member",
     organization: "Google Developer Student Club",
