@@ -27,7 +27,7 @@ const socials: SocialLink[] = [
   },
 ];
 
-const EMAIL = "bhavya@iitgoa.ac.in";
+const EMAIL = "bhavya.bharadwaj.24031@iitgoa.ac.in";
 
 function SocialIcon({ icon }: { icon: string }) {
   if (icon === "linkedin") return <Linkedin className="w-5 h-5" />;
