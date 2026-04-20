@@ -1,5 +1,6 @@
 import type { TimelineItem } from "@/types/portfolio";
 import { useEffect, useRef, useState } from "react";
+import { Markdown } from "@/components/ui/Markdown";
 
 const TIMELINE_ITEMS: TimelineItem[] = [
   {
@@ -139,9 +140,11 @@ function TimelineCard({
             {item.organization}
           </p>
 
-          <p className="font-body text-sm text-foreground/80 leading-relaxed">
-            {item.description}
-          </p>
+          <Markdown 
+            className="text-sm prose-p:leading-relaxed"
+            content={item.description}
+          />
+
         </div>
       </div>
 

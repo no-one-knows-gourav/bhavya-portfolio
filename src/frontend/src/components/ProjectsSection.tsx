@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useRef } from "react";
+import { Markdown } from "@/components/ui/Markdown";
 
 interface Project {
   id: string;
@@ -132,9 +133,11 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
             <p className="font-display font-bold text-base text-foreground mb-1 leading-tight">
               {project.title}
             </p>
-            <p className="font-body text-sm text-muted-foreground leading-relaxed">
-              {project.outcome}
-            </p>
+            <Markdown 
+              className="text-sm prose-p:leading-relaxed"
+              content={project.outcome}
+            />
+
           </div>
 
           <div className="flex flex-wrap gap-2">

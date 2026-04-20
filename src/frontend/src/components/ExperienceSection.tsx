@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Code2, FlaskConical, Users } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Markdown } from "@/components/ui/Markdown";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface ExperienceArea {
@@ -199,9 +200,11 @@ function ExperienceCard({ area, index }: CardProps) {
         <p className="font-body text-sm text-accent font-medium mb-3">
           {area.subtitle}
         </p>
-        <p className="font-body text-muted-foreground text-sm leading-relaxed">
-          {area.description}
-        </p>
+        <Markdown 
+          className="text-sm prose-p:leading-relaxed"
+          content={area.description}
+        />
+
       </div>
 
       {/* Tags */}

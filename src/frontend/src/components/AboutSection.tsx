@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
+import { Markdown } from "@/components/ui/Markdown";
 
 export function AboutSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,17 +120,20 @@ export function AboutSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="space-y-6"
           >
-            <p className="font-body text-foreground/80 text-base md:text-lg leading-relaxed font-light">
-              I am a **Technical Architect** and **AI Researcher** based at IIT Goa, specializing in high-impact solutions that bridge the gap between complex engineering and strategic leadership.
-            </p>
+            <Markdown 
+              className="text-base md:text-lg font-light"
+              content="I am a **Technical Architect** and **AI Researcher** based at IIT Goa, specializing in high-impact solutions that bridge the gap between complex engineering and strategic leadership."
+            />
             
-            <p className="font-body text-foreground/80 text-base md:text-lg leading-relaxed font-light">
-              With a track record of solving **600+ algorithmic problems** and architecting robust systems—from real-time market data ingestion to multilingual agricultural AI—I thrive at the intersection of innovation and practicality. 
-            </p>
+            <Markdown 
+              className="text-base md:text-lg font-light"
+              content="With a track record of solving **600+ algorithmic problems** and architecting robust systems—from real-time market data ingestion to multilingual agricultural AI—I thrive at the intersection of innovation and practicality."
+            />
 
-            <p className="font-body text-foreground/80 text-base md:text-lg leading-relaxed font-light">
-              Whether it's leading institutional outreach for **IEEE** or engineering scalable full-stack ecosystems, my goal is always the same: to build technology that moves the needle and empowers users across borders.
-            </p>
+            <Markdown 
+              className="text-base md:text-lg font-light"
+              content="Whether it's leading institutional outreach for **IEEE** or engineering scalable full-stack ecosystems, my goal is always the same: to build technology that moves the needle and empowers users across borders."
+            />
           </motion.div>
 
           {/* ── Signature / Callout ── */}
