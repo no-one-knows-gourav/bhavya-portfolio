@@ -10,14 +10,8 @@ const NAV_LINKS = [
 
 function Header() {
   const [scrolled, setScrolled] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("bhavya_music_preference") !== "false";
-    }
-    return true;
-  });
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const interactionRegistered = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -35,59 +29,19 @@ function Header() {
     }
   }, [isPlaying]);
 
-  useEffect(() => {
-    // Independent global listener to catch the VERY first interaction anywhere on the page
-    const resumeAudioSystem = () => {
-      const pref = typeof window !== "undefined" ? localStorage.getItem("bhavya_music_preference") : null;
-      if (pref !== "false") {
-        if (audioRef.current && audioRef.current.paused) {
-          audioRef.current.play().catch(() => {});
-        }
-        if ((window as any).__audioCtx) {
-          const ctx = (window as any).__audioCtx.ctx;
-          if (ctx && ctx.state === "suspended") {
-            ctx.resume().catch(() => {});
-          }
-        }
-      }
-      
-      // If we successfully started playing, we can remove these aggressive listeners
-      if (audioRef.current && !audioRef.current.paused) {
-        window.removeEventListener("click", resumeAudioSystem, true);
-        window.removeEventListener("keydown", resumeAudioSystem, true);
-        window.removeEventListener("touchstart", resumeAudioSystem, true);
-      }
-    };
-
-    window.addEventListener("click", resumeAudioSystem, true);
-    window.addEventListener("keydown", resumeAudioSystem, true);
-    window.addEventListener("touchstart", resumeAudioSystem, true);
-
-    return () => {
-      window.removeEventListener("click", resumeAudioSystem, true);
-      window.removeEventListener("keydown", resumeAudioSystem, true);
-      window.removeEventListener("touchstart", resumeAudioSystem, true);
-    };
-  }, []);
-
   const toggleMusic = () => {
-    // Instead of trusting React state which might mismatch blocked browser state, check the DOM
-    const isActuallyPlaying = audioRef.current ? !audioRef.current.paused : false;
-    const nextState = !isActuallyPlaying;
+    if (!audioRef.current) return;
     
+    const nextState = !isPlaying;
     setIsPlaying(nextState);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("bhavya_music_preference", nextState.toString());
+    
+    if (nextState) {
+      audioRef.current.play().catch(() => {});
+    } else {
+      audioRef.current.pause();
     }
     
-    if (audioRef.current) {
-      if (nextState) {
-        audioRef.current.play().catch(() => {});
-      } else {
-        audioRef.current.pause();
-      }
-    }
-    
+    // Resume web audio context if it was created by HeroSection
     if (nextState && (window as any).__audioCtx) {
       const ctx = (window as any).__audioCtx.ctx;
       if (ctx && ctx.state === "suspended") {
@@ -138,11 +92,19 @@ function Header() {
           {/* Music Toggle */}
           <button
             onClick={toggleMusic}
-            className="text-muted-foreground hover:text-primary transition-colors duration-200"
-            aria-label={isPlaying ? "Mute music" : "Play music"}
-            title={isPlaying ? "Mute music" : "Play music"}
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200 font-body text-sm font-medium"
           >
-            {isPlaying ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            {isPlaying ? (
+              <>
+                <Volume2 className="w-5 h-5" />
+                <span>Pause Music</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-5 h-5" />
+                <span>Play Music</span>
+              </>
+            )}
           </button>
 
           <button
@@ -158,10 +120,13 @@ function Header() {
         <div className="md:hidden flex items-center gap-4">
           <button
             onClick={toggleMusic}
-            className="text-muted-foreground hover:text-primary transition-colors duration-200"
-            aria-label={isPlaying ? "Mute music" : "Play music"}
+            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors duration-200"
           >
-            {isPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {isPlaying ? (
+              <Volume2 className="w-4 h-4" />
+            ) : (
+              <VolumeX className="w-4 h-4" />
+            )}
           </button>
           <div className="flex items-center gap-2">
             {NAV_LINKS.map((link) => (
