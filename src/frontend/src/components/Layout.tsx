@@ -26,27 +26,33 @@ function Header() {
   }, []);
 
   useEffect(() => {
-    // Handle playback attempting, including when it's blocked by the browser.
     if (!audioRef.current) return;
     
     if (isPlaying) {
-      audioRef.current.play().catch(() => {
-        // If autoplay is blocked but it's supposed to be playing, queue it for the first interaction
-        if (!interactionRegistered.current) {
-          interactionRegistered.current = true;
-          const resumeAudioContext = () => {
-            if (audioRef.current && isPlaying) {
-              audioRef.current.play().catch(() => {});
+      // 1. Try to play immediately (will fail if no prior interaction, which is normal)
+      audioRef.current.play().catch(() => {});
+      
+      // 2. Queue a reliable, global interaction listener just once.
+      if (!interactionRegistered.current) {
+        interactionRegistered.current = true;
+        const resumeAudioSystem = () => {
+          if (audioRef.current && isPlaying) {
+            audioRef.current.play().catch(() => {});
+          }
+          if ((window as any).__audioCtx) {
+            const ctx = (window as any).__audioCtx.ctx;
+            if (ctx && ctx.state === "suspended") {
+              ctx.resume().catch(() => {});
             }
-            window.removeEventListener("click", resumeAudioContext);
-            window.removeEventListener("keydown", resumeAudioContext);
-            window.removeEventListener("touchstart", resumeAudioContext);
-          };
-          window.addEventListener("click", resumeAudioContext);
-          window.addEventListener("keydown", resumeAudioContext);
-          window.addEventListener("touchstart", resumeAudioContext);
-        }
-      });
+          }
+          window.removeEventListener("click", resumeAudioSystem);
+          window.removeEventListener("keydown", resumeAudioSystem);
+          window.removeEventListener("touchstart", resumeAudioSystem);
+        };
+        window.addEventListener("click", resumeAudioSystem);
+        window.addEventListener("keydown", resumeAudioSystem);
+        window.addEventListener("touchstart", resumeAudioSystem);
+      }
     } else {
       audioRef.current.pause();
     }
@@ -57,6 +63,14 @@ function Header() {
     setIsPlaying(nextState);
     if (typeof window !== "undefined") {
       localStorage.setItem("bhavya_music_preference", nextState.toString());
+    }
+    
+    // Manual toggle is a user interaction, so we can forcefully resume the WebAudio API here too.
+    if (nextState && (window as any).__audioCtx) {
+      const ctx = (window as any).__audioCtx.ctx;
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
     }
   };
 

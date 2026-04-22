@@ -87,18 +87,7 @@ function AudioVisualGlow() {
     }
 
     const { ctx, analyser } = (window as any).__audioCtx;
-    
-    if (ctx.state === "suspended") {
-      const resumeCtx = () => {
-        ctx.resume();
-        window.removeEventListener("click", resumeCtx);
-        window.removeEventListener("keydown", resumeCtx);
-        window.removeEventListener("touchstart", resumeCtx);
-      };
-      window.addEventListener("click", resumeCtx);
-      window.addEventListener("keydown", resumeCtx);
-      window.addEventListener("touchstart", resumeCtx);
-    }
+
 
     const dataArray = new Uint8Array(analyser.frequencyBinCount);
     let animationId: number;
