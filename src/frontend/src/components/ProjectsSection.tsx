@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { useRef } from "react";
 import { Markdown } from "@/components/ui/Markdown";
+import { Map, TrendingUp, Bot, Plane, ShoppingCart, Network } from "lucide-react";
 
 interface Project {
   id: string;
@@ -8,6 +9,7 @@ interface Project {
   tagline: string;
   techs: string[];
   outcome: string;
+  icon: React.ReactNode;
 }
 
 const PROJECTS: Project[] = [
@@ -18,6 +20,7 @@ const PROJECTS: Project[] = [
     techs: ["FastAPI", "Angular", "Google Cloud", "RESTful APIs"],
     outcome:
       "Built a full-stack navigation app for least-pollution routes; secured top 20 out of 450+ teams in Clear Skies Challenge 2025.",
+    icon: <Map className="w-8 h-8" />,
   },
   {
     id: "investment-system",
@@ -26,6 +29,7 @@ const PROJECTS: Project[] = [
     techs: ["Python", "FastAPI", "LLMs", "Streaming"],
     outcome:
       "Engineered real-time stock data ingestion, reducing alert latency by 17%. Built LLM-based prediction microservices (Inter-IIT 14.0).",
+    icon: <TrendingUp className="w-8 h-8" />,
   },
   {
     id: "farmers-bot",
@@ -34,6 +38,7 @@ const PROJECTS: Project[] = [
     techs: ["Google TTS/STT", "FastAPI", "Mobile"],
     outcome:
       "Developed a multilingual app for voice queries; achieved 92% user satisfaction validated by door-to-door feedback (GDSC IIT Goa).",
+    icon: <Bot className="w-8 h-8" />,
   },
   {
     id: "airwise",
@@ -42,6 +47,7 @@ const PROJECTS: Project[] = [
     techs: ["Angular", "Node.js", "Express", "MongoDB"],
     outcome:
       "Built booking platform with dynamic surge pricing, wallet payments, and PNR generation; deployed live on Vercel.",
+    icon: <Plane className="w-8 h-8" />,
   },
   {
     id: "swiftcart",
@@ -50,6 +56,7 @@ const PROJECTS: Project[] = [
     techs: ["Angular", "Express.js", "MongoDB", "Stripe"],
     outcome:
       "Architected full-stack e-commerce app with global search and Stripe gateway integration (Architechs IIT Goa).",
+    icon: <ShoppingCart className="w-8 h-8" />,
   },
   {
     id: "netscope",
@@ -58,6 +65,7 @@ const PROJECTS: Project[] = [
     techs: ["Python", "Scapy", "Networks"],
     outcome:
       "Architected a monitoring system displaying topology despite AP isolation; compatible with all broadband, IPv4, and IPv6.",
+    icon: <Network className="w-8 h-8" />,
   },
 ];
 
@@ -98,10 +106,12 @@ function FlipCard({ project, index }: { project: Project; index: number }) {
           <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-accent/20 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-10 -left-8 w-28 h-28 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
-          {/* Simple tech indicator icon instead of emoji */}
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
-            <div className="w-8 h-8 rounded-full bg-accent/40 blur-lg animate-pulse-glow" />
-            <div className="absolute w-6 h-6 border-2 border-accent/60 rounded-lg rotate-45" />
+          {/* Dynamic project icon */}
+          <div className="relative w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 mb-2">
+            <div className="absolute inset-0 rounded-2xl bg-accent/20 blur-xl animate-pulse-glow" />
+            <div className="relative text-accent">
+              {project.icon}
+            </div>
           </div>
 
           <h3 className="font-display font-bold text-2xl text-foreground tracking-tight">
