@@ -83,9 +83,6 @@ function Header() {
 
 function Footer() {
   const year = new Date().getFullYear();
-  const hostname =
-    typeof window !== "undefined" ? window.location.hostname : "";
-  const caffeineUrl = `https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(hostname)}`;
 
   return (
     <footer className="bg-black/40 border-t border-white/10 backdrop-blur-md py-10 px-6">
@@ -99,15 +96,7 @@ function Footer() {
           </p>
         </div>
         <p className="font-body text-sm text-muted-foreground text-center">
-          © {year}. Built with love using{" "}
-          <a
-            href={caffeineUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:text-primary transition-colors underline underline-offset-2"
-          >
-            caffeine.ai
-          </a>
+          © {year} Bhavya Bharadwaj
         </p>
         <div className="flex items-center gap-4">
           <button
