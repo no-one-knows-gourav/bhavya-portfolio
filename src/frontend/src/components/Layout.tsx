@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 
 const NAV_LINKS = [
   { label: "Projects", href: "#projects" },
@@ -8,13 +9,56 @@ const NAV_LINKS = [
 ];
 
 function Header() {
-  const [scrolled, setScrolled] = React.useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("bhavya_music_preference") !== "false";
+    }
+    return true;
+  });
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const interactionRegistered = useRef(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    // Handle playback attempting, including when it's blocked by the browser.
+    if (!audioRef.current) return;
+    
+    if (isPlaying) {
+      audioRef.current.play().catch(() => {
+        // If autoplay is blocked but it's supposed to be playing, queue it for the first interaction
+        if (!interactionRegistered.current) {
+          interactionRegistered.current = true;
+          const resumeAudioContext = () => {
+            if (audioRef.current && isPlaying) {
+              audioRef.current.play().catch(() => {});
+            }
+            window.removeEventListener("click", resumeAudioContext);
+            window.removeEventListener("keydown", resumeAudioContext);
+            window.removeEventListener("touchstart", resumeAudioContext);
+          };
+          window.addEventListener("click", resumeAudioContext);
+          window.addEventListener("keydown", resumeAudioContext);
+          window.addEventListener("touchstart", resumeAudioContext);
+        }
+      });
+    } else {
+      audioRef.current.pause();
+    }
+  }, [isPlaying]);
+
+  const toggleMusic = () => {
+    const nextState = !isPlaying;
+    setIsPlaying(nextState);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bhavya_music_preference", nextState.toString());
+    }
+  };
 
   const scrollTo = (href: string) => {
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
@@ -28,6 +72,7 @@ function Header() {
           : "bg-transparent"
       }`}
     >
+      <audio ref={audioRef} src="/assets/music/track.mp3" loop />
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <button
           type="button"
@@ -53,6 +98,17 @@ function Header() {
               <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-accent rounded-full group-hover:w-full transition-all duration-300" />
             </button>
           ))}
+
+          {/* Music Toggle */}
+          <button
+            onClick={toggleMusic}
+            className="text-muted-foreground hover:text-primary transition-colors duration-200"
+            aria-label={isPlaying ? "Mute music" : "Play music"}
+            title={isPlaying ? "Mute music" : "Play music"}
+          >
+            {isPlaying ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+          </button>
+
           <button
             type="button"
             onClick={() => scrollTo("#contact")}
@@ -63,18 +119,27 @@ function Header() {
           </button>
         </nav>
         {/* Mobile nav */}
-        <div className="md:hidden flex items-center gap-2">
-          {NAV_LINKS.map((link) => (
-            <button
-              key={link.label}
-              type="button"
-              onClick={() => scrollTo(link.href)}
-              className="text-xs font-body text-muted-foreground hover:text-primary transition-colors"
-              data-ocid={`nav.mobile.${link.label.toLowerCase()}_link`}
-            >
-              {link.label}
-            </button>
-          ))}
+        <div className="md:hidden flex items-center gap-4">
+          <button
+            onClick={toggleMusic}
+            className="text-muted-foreground hover:text-primary transition-colors duration-200"
+            aria-label={isPlaying ? "Mute music" : "Play music"}
+          >
+            {isPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+          <div className="flex items-center gap-2">
+            {NAV_LINKS.map((link) => (
+              <button
+                key={link.label}
+                type="button"
+                onClick={() => scrollTo(link.href)}
+                className="text-xs font-body text-muted-foreground hover:text-primary transition-colors"
+                data-ocid={`nav.mobile.${link.label.toLowerCase()}_link`}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </header>

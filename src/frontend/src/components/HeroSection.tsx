@@ -63,22 +63,36 @@ function Fireflies() {
 
 
 export function HeroSection() {
-  const [currentRole, setCurrentRole] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
-  const intervalRef = useRef<any>(null);
+  const [displayText, setDisplayText] = useState("");
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const timeoutRef = useRef<any>(null);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setIsVisible(false);
-      setTimeout(() => {
-        setCurrentRole((prev) => (prev + 1) % ROLES.length);
-        setIsVisible(true);
-      }, 400);
-    }, 3000);
+    const currentWord = ROLES[roleIndex];
+
+    if (!isDeleting && displayText === currentWord) {
+      // Pause at full word before deleting
+      timeoutRef.current = setTimeout(() => setIsDeleting(true), 2000);
+    } else if (isDeleting && displayText === "") {
+      // Move to next word after fully deleted
+      setIsDeleting(false);
+      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+    } else {
+      const speed = isDeleting ? 50 : 90;
+      timeoutRef.current = setTimeout(() => {
+        setDisplayText(
+          isDeleting
+            ? currentWord.substring(0, displayText.length - 1)
+            : currentWord.substring(0, displayText.length + 1)
+        );
+      }, speed);
+    }
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, []);
+  }, [displayText, roleIndex, isDeleting]);
 
   const scrollToProjects = () => {
     document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" });
@@ -143,7 +157,7 @@ export function HeroSection() {
           <span
             className="font-display font-extrabold leading-none whitespace-nowrap"
             style={{
-              fontSize: "clamp(2.8rem, 12vw, 15rem)",
+              fontSize: "clamp(3.5rem, 15vw, 18rem)",
               letterSpacing: "-0.02em",
               color: "transparent",
               WebkitTextStroke:
@@ -258,27 +272,21 @@ export function HeroSection() {
         style={{ zIndex: 30 }}
       >
 
-        {/* Cycling role */}
-        <div className="h-10 flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            {isVisible && (
-              <motion.div
-                key={currentRole}
-                initial={{ opacity: 0, filter: "blur(8px)", y: 6 }}
-                animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-                exit={{ opacity: 0, filter: "blur(8px)", y: -6 }}
-                transition={{ duration: 0.45, ease: "anticipate" }}
-                className="flex items-center gap-4"
-                data-ocid="hero.role_badge"
-              >
-                <div className="w-8 h-px bg-accent/50" />
-                <span className="font-display font-semibold text-xl md:text-2xl text-accent">
-                  {ROLES[currentRole]}
-                </span>
-                <div className="w-8 h-px bg-accent/50" />
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Cycling role — typewriter */}
+        <div className="h-14 flex items-center justify-center">
+          <div className="flex items-center gap-4" data-ocid="hero.role_badge">
+            <div className="w-8 h-px bg-accent/50" />
+            <span className="font-display font-semibold text-2xl md:text-4xl text-accent">
+              {displayText}
+              <span
+                className="inline-block w-[3px] h-[1em] bg-accent ml-0.5 align-middle"
+                style={{
+                  animation: "blink-cursor 0.75s step-end infinite",
+                }}
+              />
+            </span>
+            <div className="w-8 h-px bg-accent/50" />
+          </div>
         </div>
 
         {/* Tagline */}

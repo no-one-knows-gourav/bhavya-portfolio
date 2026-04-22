@@ -127,7 +127,7 @@ export function AboutSection() {
             
             <Markdown 
               className="text-base md:text-lg font-light"
-              content="With a track record of solving **600+ algorithmic problems** and architecting robust systems—from real-time market data ingestion to multilingual agricultural AI—I thrive at the intersection of innovation and practicality."
+              content="With a track record of solving **600+ algorithmic problems** and architecting robust systems, from real-time market data ingestion to multilingual agricultural AI, I thrive at the intersection of innovation and practicality."
             />
 
             <Markdown 

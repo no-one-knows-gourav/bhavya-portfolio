@@ -14,6 +14,15 @@ const TIMELINE_ITEMS: TimelineItem[] = [
   },
   {
     id: 2,
+    date: "Jan 2025",
+    title: "Inter IIT Bootcamp mentor",
+    organization: "Inter IIT Tech Meet 15.0",
+    description:
+      "Mentored students in Agentic AI and Agentic system design for Inter IIT Tech Meet 15.0",
+    type: "work",
+  },
+  {
+    id: 3,
     date: "Sept 2024",
     title: "Core Member",
     organization: "Architechs (Web and App Development)",
@@ -22,7 +31,7 @@ const TIMELINE_ITEMS: TimelineItem[] = [
     type: "work",
   },
   {
-    id: 3,
+    id: 4,
     date: "Aug 2024",
     title: "Core Member",
     organization: "GDSC, IIT Goa",

@@ -1,6 +1,6 @@
 import type { SocialLink } from "@/types/portfolio";
-import { ArrowUpRight, Linkedin, Mail, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { ArrowUpRight, Linkedin, Mail, Sparkles, Send } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { SiGithub } from "react-icons/si";
 
 const socials: SocialLink[] = [
@@ -28,8 +28,111 @@ function SocialIcon({ icon }: { icon: string }) {
   return null;
 }
 
+// ── Particle canvas for contact section background ───────────────────────────
+function ContactParticleCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    interface Particle {
+      x: number;
+      y: number;
+      r: number;
+      vx: number;
+      vy: number;
+      alpha: number;
+      dAlpha: number;
+    }
+
+    const particles: Particle[] = [];
+    const COUNT = 40;
+
+    function resize() {
+      if (!canvas) return;
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
+    function spawn(): Particle {
+      if (!canvas)
+        return { x: 0, y: 0, r: 2, vx: 0, vy: 0, alpha: 0.5, dAlpha: 0.005 };
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: 1 + Math.random() * 2,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -0.1 - Math.random() * 0.3,
+        alpha: 0.1 + Math.random() * 0.4,
+        dAlpha: 0.001 + Math.random() * 0.003,
+      };
+    }
+
+    resize();
+    for (let i = 0; i < COUNT; i++) particles.push(spawn());
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    function draw() {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha += p.dAlpha;
+        if (p.alpha > 0.6 || p.alpha < 0.05) p.dAlpha *= -1;
+
+        // Wrap edges
+        if (p.y < -10) p.y = canvas.height + 10;
+        if (p.x < -10) p.x = canvas.width + 10;
+        if (p.x > canvas.width + 10) p.x = -10;
+
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 2);
+        const alphaStr = p.alpha.toString();
+        // Uses a pinkish/accent color for particles here
+        grad.addColorStop(0, `oklch(0.78 0.2 280 / ${alphaStr})`);
+        grad.addColorStop(1, "oklch(0.78 0.2 280 / 0)");
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      rafRef.current = requestAnimationFrame(draw);
+    }
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      ro.disconnect();
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none select-none z-0"
+      tabIndex={-1}
+      aria-hidden="true"
+    />
+  );
+}
+
 export function ContactSection() {
   const [hovered, setHovered] = useState<number | null>(null);
+  const [message, setMessage] = useState("");
+
+  const handleSendMessage = () => {
+    const encodedMessage = encodeURIComponent(message);
+    window.location.href = `mailto:${EMAIL}?subject=Hello Bhavya!&body=${encodedMessage}`;
+  };
 
   return (
     <section
@@ -37,25 +140,27 @@ export function ContactSection() {
       className="relative py-28 overflow-hidden"
       data-ocid="contact.section"
     >
+      <ContactParticleCanvas />
+
       {/* Ambient background blobs */}
       <div
-        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-primary/20 blur-[80px] animate-pulse-glow"
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-primary/20 blur-[80px] animate-pulse-glow z-0"
         aria-hidden="true"
       />
       <div
-        className="pointer-events-none absolute bottom-0 right-0 w-72 h-72 rounded-full bg-accent/10 blur-[60px] animate-float"
+        className="pointer-events-none absolute bottom-0 right-0 w-72 h-72 rounded-full bg-accent/10 blur-[60px] animate-float z-0"
         aria-hidden="true"
         style={{ animationDelay: "1.2s" }}
       />
       <div
-        className="pointer-events-none absolute top-1/2 left-0 w-48 h-48 rounded-full bg-primary/15 blur-[50px] animate-float"
+        className="pointer-events-none absolute top-1/2 left-0 w-48 h-48 rounded-full bg-primary/15 blur-[50px] animate-float z-0"
         aria-hidden="true"
         style={{ animationDelay: "0.4s" }}
       />
 
       <div className="relative z-10 max-w-3xl mx-auto px-6 flex flex-col items-center text-center animate-fade-in-up">
         {/* Badge */}
-        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/20 border border-accent/30 text-accent font-body text-xs font-semibold tracking-widest uppercase mb-6">
+        <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-primary/20 border border-accent/30 text-accent font-body text-xs font-semibold tracking-widest uppercase mb-6 shadow-glow">
           <Sparkles className="w-3.5 h-3.5" />
           Available for Opportunities
         </span>
@@ -66,44 +171,33 @@ export function ContactSection() {
         </h2>
 
         {/* Tagline */}
-        <p className="font-body text-muted-foreground text-lg md:text-xl mb-14 max-w-lg">
+        <p className="font-body text-muted-foreground text-lg md:text-xl mb-12 max-w-lg">
           Let's build something{" "}
           <span className="text-accent font-semibold">remarkable</span>{" "}
           together. I'm always open to interesting conversations and
           collaborations.
         </p>
 
-        {/* Email card */}
-        <a
-          href={`mailto:${EMAIL}`}
-          data-ocid="contact.email_button"
-          className="group relative flex items-center gap-4 w-full max-w-md px-7 py-5 rounded-2xl
-            bg-card border border-border/60
-            hover:border-accent/50
-            shadow-card-hover hover:shadow-glow
-            transition-smooth cursor-pointer mb-14
-            overflow-hidden"
-          aria-label={`Send email to ${EMAIL}`}
-        >
-          {/* Hover shimmer */}
-          <span
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-smooth
-              bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10"
-            aria-hidden="true"
+        {/* Message Input Area */}
+        <div className="w-full max-w-md flex flex-col gap-4 mb-14 relative group">
+          <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl group-hover:bg-primary/10 transition-smooth pointer-events-none" />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type your message here..."
+            className="relative w-full h-32 px-5 py-4 bg-black border border-border/80 rounded-2xl font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/50 transition-smooth resize-none shadow-subtle backdrop-blur-sm"
           />
-          <span className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-primary/20 group-hover:bg-primary/30 transition-smooth flex-shrink-0">
-            <Mail className="w-5 h-5 text-accent" />
-          </span>
-          <span className="relative flex flex-col items-start min-w-0">
-            <span className="font-body text-xs text-muted-foreground tracking-widest uppercase mb-0.5">
-              Reach me at
+          <button
+            onClick={handleSendMessage}
+            className="relative flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-bold hover:bg-primary/90 transition-bounce shadow-card-hover overflow-hidden group/btn"
+          >
+            <span className="absolute inset-0 bg-accent/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
+            <span className="relative z-10 flex items-center gap-2">
+              <Send className="w-4 h-4" />
+              Open in Mail
             </span>
-            <span className="font-display font-semibold text-foreground text-base truncate">
-              {EMAIL}
-            </span>
-          </span>
-          <ArrowUpRight className="relative ml-auto w-5 h-5 text-accent opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-smooth flex-shrink-0" />
-        </a>
+          </button>
+        </div>
 
         {/* Social links */}
         <div
@@ -132,7 +226,7 @@ export function ContactSection() {
                 <span
                   className="absolute inset-0 rounded-2xl animate-pulse-glow"
                   style={{
-                    boxShadow: `0 0 20px 4px ${social.color}44`,
+                    boxShadow: `0 0 20px 4px ${social.color}66`,
                   }}
                   aria-hidden="true"
                 />
@@ -143,7 +237,7 @@ export function ContactSection() {
         </div>
 
         {/* Subtle divider */}
-        <div className="mt-16 w-24 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="mt-16 w-32 h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
       </div>
     </section>
   );

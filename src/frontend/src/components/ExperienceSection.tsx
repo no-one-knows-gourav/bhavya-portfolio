@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Code2, FlaskConical, Users } from "lucide-react";
+import { Code2, Rocket, Users } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Markdown } from "@/components/ui/Markdown";
 
@@ -25,12 +25,12 @@ const EXPERIENCES: ExperienceArea[] = [
     color: "accent",
   },
   {
-    icon: <FlaskConical size={28} />,
-    title: "Research",
-    subtitle: "ML / NLP & Data Science",
+    icon: <Rocket size={28} />,
+    title: "Product Development",
+    subtitle: "Agentic AI & MLOps",
     description:
-      "Conducted research in Natural Language Processing and applied machine learning at IIT Goa. Published work on sentiment analysis pipelines and low-resource language modelling.",
-    tags: ["NLP", "PyTorch", "HuggingFace", "Data Science", "Research"],
+      "Developed an end-to-end product called BlueScholar to solve revision, examination and evaluation inefficiencies in educational institutions. Currently involved in founding an EdTech initiative around the same",
+    tags: ["Agentic AI", "MLOps", "Product", "EdTech", "BlueScholar"],
     color: "primary",
   },
   {
@@ -178,10 +178,17 @@ interface CardProps {
 
 function ExperienceCard({ area, index }: CardProps) {
   const delay = `${index * 0.15}s`;
+  const isMiddle = index === 1;
+
   return (
     <div
       data-ocid={`experience.card.${index + 1}`}
-      className="group relative rounded-2xl border border-border bg-card/70 backdrop-blur-sm p-8 flex flex-col gap-5 hover:border-accent/50 hover:shadow-glow transition-smooth animate-fade-in-up overflow-hidden"
+      className={`group relative rounded-2xl border bg-card/70 backdrop-blur-sm p-8 flex flex-col gap-5 transition-smooth animate-fade-in-up overflow-hidden 
+        ${
+          isMiddle
+            ? "border-accent/50 shadow-glow shadow-accent/20"
+            : "border-border hover:border-accent/50 hover:shadow-glow"
+        }`}
       style={{ animationDelay: delay }}
     >
       {/* Background gradient sweep on hover */}
