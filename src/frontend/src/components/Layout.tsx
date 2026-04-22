@@ -29,43 +29,65 @@ function Header() {
     if (!audioRef.current) return;
     
     if (isPlaying) {
-      // 1. Try to play immediately (will fail if no prior interaction, which is normal)
       audioRef.current.play().catch(() => {});
-      
-      // 2. Queue a reliable, global interaction listener just once.
-      if (!interactionRegistered.current) {
-        interactionRegistered.current = true;
-        const resumeAudioSystem = () => {
-          if (audioRef.current && isPlaying) {
-            audioRef.current.play().catch(() => {});
-          }
-          if ((window as any).__audioCtx) {
-            const ctx = (window as any).__audioCtx.ctx;
-            if (ctx && ctx.state === "suspended") {
-              ctx.resume().catch(() => {});
-            }
-          }
-          window.removeEventListener("click", resumeAudioSystem);
-          window.removeEventListener("keydown", resumeAudioSystem);
-          window.removeEventListener("touchstart", resumeAudioSystem);
-        };
-        window.addEventListener("click", resumeAudioSystem);
-        window.addEventListener("keydown", resumeAudioSystem);
-        window.addEventListener("touchstart", resumeAudioSystem);
-      }
     } else {
       audioRef.current.pause();
     }
   }, [isPlaying]);
 
+  useEffect(() => {
+    // Independent global listener to catch the VERY first interaction anywhere on the page
+    const resumeAudioSystem = () => {
+      const pref = typeof window !== "undefined" ? localStorage.getItem("bhavya_music_preference") : null;
+      if (pref !== "false") {
+        if (audioRef.current && audioRef.current.paused) {
+          audioRef.current.play().catch(() => {});
+        }
+        if ((window as any).__audioCtx) {
+          const ctx = (window as any).__audioCtx.ctx;
+          if (ctx && ctx.state === "suspended") {
+            ctx.resume().catch(() => {});
+          }
+        }
+      }
+      
+      // If we successfully started playing, we can remove these aggressive listeners
+      if (audioRef.current && !audioRef.current.paused) {
+        window.removeEventListener("click", resumeAudioSystem, true);
+        window.removeEventListener("keydown", resumeAudioSystem, true);
+        window.removeEventListener("touchstart", resumeAudioSystem, true);
+      }
+    };
+
+    window.addEventListener("click", resumeAudioSystem, true);
+    window.addEventListener("keydown", resumeAudioSystem, true);
+    window.addEventListener("touchstart", resumeAudioSystem, true);
+
+    return () => {
+      window.removeEventListener("click", resumeAudioSystem, true);
+      window.removeEventListener("keydown", resumeAudioSystem, true);
+      window.removeEventListener("touchstart", resumeAudioSystem, true);
+    };
+  }, []);
+
   const toggleMusic = () => {
-    const nextState = !isPlaying;
+    // Instead of trusting React state which might mismatch blocked browser state, check the DOM
+    const isActuallyPlaying = audioRef.current ? !audioRef.current.paused : false;
+    const nextState = !isActuallyPlaying;
+    
     setIsPlaying(nextState);
     if (typeof window !== "undefined") {
       localStorage.setItem("bhavya_music_preference", nextState.toString());
     }
     
-    // Manual toggle is a user interaction, so we can forcefully resume the WebAudio API here too.
+    if (audioRef.current) {
+      if (nextState) {
+        audioRef.current.play().catch(() => {});
+      } else {
+        audioRef.current.pause();
+      }
+    }
+    
     if (nextState && (window as any).__audioCtx) {
       const ctx = (window as any).__audioCtx.ctx;
       if (ctx && ctx.state === "suspended") {
