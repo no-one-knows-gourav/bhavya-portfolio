@@ -72,7 +72,7 @@ function Header() {
           : "bg-transparent"
       }`}
     >
-      <audio ref={audioRef} src="/assets/music/track.mp3" loop />
+      <audio id="bg-music-player" ref={audioRef} src="/assets/music/track.mp3" loop crossOrigin="anonymous" />
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <button
           type="button"

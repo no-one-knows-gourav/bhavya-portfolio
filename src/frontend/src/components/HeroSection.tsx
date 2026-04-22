@@ -62,6 +62,128 @@ function Fireflies() {
 }
 
 
+function AudioVisualGlow() {
+  const glowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const audioEl = document.getElementById("bg-music-player") as HTMLAudioElement;
+    if (!audioEl) return;
+
+    if (!(window as any).__audioCtx) {
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContext();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 128; 
+
+      try {
+        const source = ctx.createMediaElementSource(audioEl);
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+      } catch (err) {
+        console.warn("Audio source already connected", err);
+      }
+
+      (window as any).__audioCtx = { ctx, analyser };
+    }
+
+    const { ctx, analyser } = (window as any).__audioCtx;
+    
+    if (ctx.state === "suspended") {
+      const resumeCtx = () => {
+        ctx.resume();
+        window.removeEventListener("click", resumeCtx);
+        window.removeEventListener("keydown", resumeCtx);
+        window.removeEventListener("touchstart", resumeCtx);
+      };
+      window.addEventListener("click", resumeCtx);
+      window.addEventListener("keydown", resumeCtx);
+      window.addEventListener("touchstart", resumeCtx);
+    }
+
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    let animationId: number;
+
+    const render = () => {
+      analyser.getByteFrequencyData(dataArray);
+
+      // Average bass frequencies for pulse
+      let sum = 0;
+      for (let i = 0; i < 8; i++) {
+        sum += dataArray[i];
+      }
+      const avg = sum / 8; 
+      
+      const scale = 1 + (avg / 255) * 0.35;
+      const opacity = 0.15 + (avg / 255) * 0.45;
+
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        glowRef.current.style.opacity = opacity.toString();
+        glowRef.current.style.background = ''; // reset just in case
+      }
+
+      animationId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={glowRef}
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        zIndex: 15,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "clamp(260px, 50vw, 580px)",
+        height: "clamp(260px, 50vw, 580px)",
+        borderRadius: "50%",
+        background:
+          "radial-gradient(ellipse at center, oklch(0.65 0.25 280 / 0.5) 0%, oklch(0.55 0.22 270 / 0.1) 50%, transparent 75%)",
+        pointerEvents: "none",
+        transition: "transform 0.05s ease-out, opacity 0.05s ease-out",
+      }}
+    />
+  );
+}
+
+function RotatingRings() {
+  return (
+    <div
+      className="absolute top-1/2 left-1/2 pointer-events-none"
+      style={{ zIndex: 12, transform: "translate(-50%, -50%)" }}
+    >
+      {/* Outer Ring */}
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/20"
+        style={{ width: "clamp(300px, 58vw, 680px)", height: "clamp(300px, 58vw, 680px)" }}
+      >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-accent/40 shadow-glow" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 rounded-full bg-primary/40 shadow-glow" />
+      </motion.div>
+
+      {/* Inner Ring */}
+      <motion.div
+        animate={{ rotate: -360 }}
+        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/20 border-dashed"
+        style={{ width: "clamp(220px, 42vw, 480px)", height: "clamp(220px, 42vw, 480px)" }}
+      >
+        <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary/40" />
+      </motion.div>
+    </div>
+  );
+}
+
 export function HeroSection() {
   const [displayText, setDisplayText] = useState("");
   const [roleIndex, setRoleIndex] = useState(0);
@@ -72,10 +194,8 @@ export function HeroSection() {
     const currentWord = ROLES[roleIndex];
 
     if (!isDeleting && displayText === currentWord) {
-      // Pause at full word before deleting
       timeoutRef.current = setTimeout(() => setIsDeleting(true), 2000);
     } else if (isDeleting && displayText === "") {
-      // Move to next word after fully deleted
       setIsDeleting(false);
       setRoleIndex((prev) => (prev + 1) % ROLES.length);
     } else {
@@ -108,16 +228,8 @@ export function HeroSection() {
       className="min-h-[100svh] flex flex-col items-center relative overflow-hidden"
       data-ocid="hero.section"
     >
-      {/*
-       * Layout is a normal flex COLUMN — no element overlaps another vertically.
-       * The only z-index trick is: "Bharadwaj" outline sits BEHIND the photo
-       * inside the same relative container.
-       */}
-
-      {/* ── Fireflies ambient layer ── */}
       <Fireflies />
 
-      {/* ── 1. "BHAVYA" — solid, in flow, above photo ── */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -132,7 +244,6 @@ export function HeroSection() {
             fontSize: "clamp(4.5rem, 17vw, 20rem)",
             letterSpacing: "-0.03em",
             lineHeight: 0.9,
-            /* lavender accent — no glow */
             color: "oklch(0.78 0.2 280)",
           }}
         >
@@ -140,12 +251,10 @@ export function HeroSection() {
         </span>
       </motion.div>
 
-      {/* ── 2. Photo panel — "Bharadwaj" outline behind photo inside this block ── */}
       <div
         className="relative flex justify-center items-end w-full"
         style={{ marginTop: "-1vw", flexShrink: 0 }}
       >
-        {/* ── 2a. "BHARADWAJ" outline — z:10, behind photo ── */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -168,38 +277,9 @@ export function HeroSection() {
           </span>
         </motion.div>
 
-        {/*
-         * ── 2b. Photo — z:20, in front of outline ──
-         *
-         * The image is 1348 × 2292 (portrait, ratio ≈ 1 : 1.70).
-         * We want to show head → elbow ≈ top 58% of height.
-         *
-         * Trick: wrap in a div with overflow:hidden and a fixed height.
-         * img width:100% + height:auto → image renders taller than the
-         * container, and overflow:hidden clips the bottom.
-         *
-         * Target crop: show top 58%  →  container height = 58% of natural height
-         *   natural height of 500px-wide img = 500 × (2292/1348) ≈ 850px
-         *   container height = 850 × 0.58 ≈ 493px  →  aspect ≈ 500:493 ≈ 1:0.99
-         * We'll use a convenient responsive height via clamp.
-         */}
-        {/* ── Purple glow halo behind photo — z:15 ── */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            zIndex: 15,
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "clamp(260px, 50vw, 580px)",
-            height: "clamp(260px, 50vw, 580px)",
-            borderRadius: "50%",
-            background:
-              "radial-gradient(ellipse at center, oklch(0.65 0.25 280 / 0.22) 0%, oklch(0.55 0.22 270 / 0.08) 55%, transparent 75%)",
-            pointerEvents: "none",
-          }}
-        />
+        {/* ── Visualizer & Rings behind photo ── */}
+        <AudioVisualGlow />
+        <RotatingRings />
 
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
