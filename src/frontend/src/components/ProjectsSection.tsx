@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { useRef } from "react";
 import { Markdown } from "@/components/ui/Markdown";
-import { Map, TrendingUp, Bot, Plane, ShoppingCart, Network } from "lucide-react";
+import { Map, TrendingUp, Bot, Plane, ShoppingCart, Network, GraduationCap, Boxes, Fingerprint } from "lucide-react";
 
 interface Project {
   id: string;
@@ -13,6 +13,33 @@ interface Project {
 }
 
 const PROJECTS: Project[] = [
+  {
+    id: "bluescholar",
+    title: "BlueScholar",
+    tagline: "Agentic Education & Examination B2B SaaS",
+    techs: ["Cloud Architecture", "LangGraph", "B2B SaaS"],
+    outcome:
+      "Agentic RAG and OCR microservices for content-aligned QA, and integrated AI-assisted grading and insights, with reasoning.",
+    icon: <GraduationCap className="w-8 h-8" />,
+  },
+  {
+    id: "qnsult",
+    title: "Qnsult",
+    tagline: "AI-native Consulting Intelligence Platform",
+    techs: ["Google Cloud Run", "GCP Integration", "Consulting"],
+    outcome:
+      "12 Agents developed in Google Agent Development Kit (ADK) to prevent \"hitting the wall\" along with progress tracking, stall detection, strategic playbook design, AI-averse solution drafting and client-specific catering and retention.",
+    icon: <Boxes className="w-8 h-8" />,
+  },
+  {
+    id: "shap-attribution",
+    title: "SHAP Attribution",
+    tagline: "SHAP-based fingerprinting for IoT intrusion detection",
+    techs: ["Reproducibility", "Intrusion Detection", "Machine Learning"],
+    outcome:
+      "Reproduced the Sharma et al. classifier and SHAP explainer encoder for IoT intrusion detection faithfully to recover the paper's headline AUROC score, then designed an adaptive attack to bypass the given defense and empirically demonstrate the limits of the classifier.",
+    icon: <Fingerprint className="w-8 h-8" />,
+  },
   {
     id: "ecomiles",
     title: "EcoMiles",

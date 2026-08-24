@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Code2, Rocket, Users } from "lucide-react";
+import { Code2, FlaskConical, Users } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Markdown } from "@/components/ui/Markdown";
 
@@ -25,12 +25,12 @@ const EXPERIENCES: ExperienceArea[] = [
     color: "accent",
   },
   {
-    icon: <Rocket size={28} />,
-    title: "Product Development",
-    subtitle: "Agentic AI & MLOps",
+    icon: <FlaskConical size={28} />,
+    title: "Research",
+    subtitle: "Cognitive Science Department, IIT Kanpur",
     description:
-      "Developed an end-to-end product called BlueScholar to solve revision, examination and evaluation inefficiencies in educational institutions. Currently involved in founding an EdTech initiative around the same",
-    tags: ["Agentic AI", "MLOps", "Product", "EdTech", "BlueScholar"],
+      "Developed a novel GAN-based architecture to improve causal control and model interpretability by employing an NTM-encoder, then architecturally separating the noise and semantic channels through Scale Erasure and Gradient Reversals, finally combining through Linear Modulation.",
+    tags: ["GANs", "Interpretability", "Causal Control", "NTM", "IIT Kanpur"],
     color: "primary",
   },
   {
